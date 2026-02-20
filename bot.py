@@ -3,11 +3,11 @@ from config import Config, load_config
 import requests
 from bs4 import BeautifulSoup
 
-# config: Config = load_config(".env")
-# bot_token=config.bot.token
+config: Config = load_config(".env")
+bot_token=config.bot.token
 
 
-# GET - на получение данных с сервера
+# GET - на получение данных с сервера - html / json
 # POST - отправляем данные на сервер или сохраняем
 
 # response=requests.get("https://google.com")
@@ -19,13 +19,15 @@ from bs4 import BeautifulSoup
 # print(s.text)
 # JSON
 
-urls = ['https://google.com','https://rutube.ru','https://vk.com']
-pages={}
-for url in urls:
-    response = requests.get(url)
-    html=response.text
-    soup = BeautifulSoup(response.text, 'html.parser')
-    page_title = soup.title.string if soup.title else "NO TITLE"
-    pages[page_title]=html
-print(pages)
+# urls = ['https://google.com','https://rutube.ru','https://vk.com']
+# pages={}
+# for url in urls:
+#     response = requests.get(url)
+#     html=response.text
+#     soup = BeautifulSoup(response.text, 'html.parser')
+#     page_title = soup.title.string if soup.title else "NO TITLE"
+#     pages[page_title]=html
+# print(pages)
+
+
 
