@@ -2,7 +2,7 @@ import requests
 import asyncio
 from config import Config, load_config
 from aiogram import Bot, Dispatcher
-from aiogram.filters import Command, CommandObject
+from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.types import Message
 
 
@@ -13,7 +13,8 @@ bot = Bot(token=bot_token)
 
 dp = Dispatcher()
 
-@dp.message(Command(commands=["start"]))
+# @dp.message(Command(commands=["start"],prefix="/"))
+@dp.message(CommandStart())
 async def process_start(message: Message):
     await message.answer("Привет!")
 
