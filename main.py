@@ -21,7 +21,7 @@ def my_help_filter(message: Message)->bool:
 def count_message(message: Message)->bool:
     return message.text and len(message.text)<80
 
-
+#
 @dp.message(F.text.startswith("Привет"))
 async def hello_handler(message: Message):
     await message.answer("Привет")
