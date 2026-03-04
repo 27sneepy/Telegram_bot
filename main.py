@@ -1,59 +1,22 @@
-import requests
-import asyncio
-from config import Config, load_config
-from aiogram import Bot, Dispatcher
-from aiogram.filters import Command, CommandObject
+from aiogram import Bot, Dispatcher, F
+from aiogram.filters import Command
 from aiogram.types import Message
+from asyncio import run
+from config import BOT_TOKEN
 
-
-config: Config = load_config()
-bot_token = config.bot.token
-
-bot = Bot(token=bot_token)
-
-dp = Dispatcher()
-
-@dp.message(Command(commands=["start"]))
-async def process_start(message: Message):
-    await message.answer("Привет!")
-
-
-# help
-@dp.message(Command(commands=["help"]))
-async def process_help(message: Message):
-    await message.answer("Команды:\n/start - Старт \n/help - О боте\n/dog - фотка собаки!\n/breeds - породы ")
-
-
-@dp.message(Command(commands=['dog']))
-async def answer_dog(message: Message, command: CommandObject):
-    if command.args:
-        s = requests.get(f"https://dog.ceo/api/breed/{command.args}/images/random")
-    else:
-        s = requests.get(f"https://dog.ceo/api/breeds/image/random")
-    json_s = s.json()
-    if json_s.get("status")== "success":
-        print(json_s.get("message"))
-        await message.answer_photo(photo=json_s.get("message"))
-    else:
-        await message.answer("ТЫ не прав не могу так")
-    print(s.content)
-
-
-
-@dp.message(Command(commands=["breeds"]))
-async def show_breeds(message: Message):
-    result = requests.get("https://dog.ceo/api/breeds/list/all")
-    result_json = result.json()
-    dogs_types = result_json["message"].keys()
-    s = "\n".join(list(dogs_types)[:30]) #сделать 30 собак и сделать вывод столбиком
-    await message.answer(s)
 
 async def main():
-    await dp.start_polling(bot)
+    bot = Bot(token=BOT_TOKEN)
+    dp = Dispatcher()
+    # https://catfact.ninja/fact
+    @dp.message(Command(commands=['start']))
+    async def start_handler(message: Message):
+        print(f"[LOG] пользователь {message.from_user.id, message.from_user.first_name} нажал на кнопку старт")
 
-
-if __name__ == '__main__':
-    asyncio.run(main())
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-
+        await message.answer(f'Привет {message.from_user.full_name}')
+    @dp.message()
+    async def get_cat_fact(message: Message):
+        await dp.start_polling(bot)
+        print(f'[LOG] Бот запущен')
+if __name__ == 'main':
+    run(main()) # запускает цикла событий(dispatcher)
