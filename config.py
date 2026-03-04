@@ -1,18 +1,6 @@
-from dataclasses import dataclass
 from environs import Env
-# from os import getenv
-@dataclass
-class TgBot:
-    token: str
 
-@dataclass
-class Config:
-    bot: TgBot
+env = Env() # настройки
+env.read_env() # где файл .env и получение всех переменных из него
 
-
-def load_config(path=None) -> Config:
-        env = Env()
-        env.read_env(path)
-        return Config(
-            bot=TgBot(token=env.str("BOT_TOKEN"))
-        )
+BOT_TOKEN = env('BOT_TOKEN')
