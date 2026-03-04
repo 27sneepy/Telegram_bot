@@ -12,7 +12,7 @@ bot_token = config.bot.token
 bot = Bot(token=bot_token)
 
 dp = Dispatcher()
-
+#
 @dp.message(Command(commands=["start"]))
 async def process_start(message: Message):
     await message.answer("Привет!")
