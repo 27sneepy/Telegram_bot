@@ -29,7 +29,7 @@ async def hello_handler(message: Message):
 @dp.message(~F.text.len()<80)
 async def short_message_handler(message: Message):
     await message.answer("wow >= 80")
-
+#
 @dp.message(F.photo)
 async def photo_handler(message: Message):
     # F.photo
