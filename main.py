@@ -4,7 +4,7 @@ from aiogram.types import Message
 from requests import get
 from asyncio import run
 from config import BOT_TOKEN
-
+from random import choice
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
@@ -25,17 +25,18 @@ async def main():
 
     @dp.message(Command(commands=['breeds']))
     async def breeds_handler(message: Message):
-        result=get("https://catfact.ninja/breeds")
-        result_json = result.json()
-        print(result_json["data"][0]["country"])
-        print(result_json["data"][0]["breed"])
-        await message.answer(result_json["data"][0]["country"])
+        response=get("https://catfact.ninja/breeds")
+        response_json = response.json()
+        random_item=choice(response_json["data"])
+        await message.answer(f'🐈 Случайная порода:{random_item["breed"]}\n🌍 Родина:{random_item["country"]}')
+
 
 
     @dp.message(F.text)
     async def random_answer(message: Message):
         print(f"[LOG] Пользователь {message.from_user.id} написал текст: {message.text}")
         await message.answer("!!!")
+
 
 
     await dp.start_polling(bot)
