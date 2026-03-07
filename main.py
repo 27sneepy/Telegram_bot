@@ -9,33 +9,37 @@ from random import choice
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
-    @dp.message(Command(commands=['start']))
-    async def start_handler(message: Message):
-        print(f"[LOG] пользователь {message.from_user.id, message.from_user.first_name} нажал на кнопку старт")
-        await message.answer(f'Привет {message.from_user.full_name}')
-    @dp.message(Command(commands=['catfact']))
-    async def get_cat_fact(message: Message):
-        print(f"[LOG] Пользователь {message.from_user.id} нажал команду /catfact")
-        print(f"[LOG] Запрашиваю факт о котах")
-        response = get('https://catfact.ninja/fact')
-        print(f"[LOG] получен результат со статусом {response.status_code}")
-        response_json = response.json()
-        print(response_json["fact"])
-        await message.answer(response_json["fact"])
 
-    @dp.message(Command(commands=['breeds']))
-    async def breeds_handler(message: Message):
-        response=get("https://catfact.ninja/breeds")
-        response_json = response.json()
-        random_item=choice(response_json["data"])
-        await message.answer(f'🐈 Случайная порода:{random_item["breed"]}\n🌍 Родина:{random_item["country"]}')
+    # F - встроено все что нам нужно
+    # Command - ограничение
+    # CommandStart - ограничение
 
+    # @dp.message(F.from_user.username.contains("a"))
+    # async def echo(message: Message):
+    #     await message.answer("привет")
+    a=[5059184679,12312321]
+    @dp.message(F.from_user.id.in_(a),Command(commands=["secret"]))
+    async def echo(message: Message):
+        await message.answer("Привет")
 
-
-    @dp.message(F.text)
-    async def random_answer(message: Message):
-        print(f"[LOG] Пользователь {message.from_user.id} написал текст: {message.text}")
-        await message.answer("!!!")
+    # @dp.message(F.text.in_("start"))
+    # async def handler(message: Message):
+    #     await message.answer("asda")
+    #
+    # # содержится в сообщении start
+    # @dp.message(F.text.contains("start"))
+    # async def handler(message: Message):
+    #     await message.answer(f"ПРивет {message.from_user.first_name}")
+    #
+    # @dp.message(F.from_user.username == ("weshouldnttalkanymore"))
+    # async def handler(message: Message):
+    #     await message.answer("sdasd")
+    #
+    #
+    # @dp.message(Command(commands=['start']))
+    # async def start_handler(message: Message):
+    #     print(f"[LOG] пользователь {message.from_user.id, message.from_user.first_name} нажал на кнопку старт")
+    #     await message.answer(f'Привет {message.from_user.full_name}')
 
 
 
