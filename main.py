@@ -1,47 +1,43 @@
 from aiogram import Bot, Dispatcher, F
-from aiogram.filters import Command
 from aiogram.types import Message
-from requests import get
 from asyncio import run
 from config import BOT_TOKEN
-from random import choice
+import os
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    # F - встроено все что нам нужно
-    # Command - ограничение
-    # CommandStart - ограничение
+    # @dp.message(F.photo)
+    # async def get_photo(message: Message, bot: Bot):
+    #     print(f"[LOG] пользователь {message.from_user.id} вызвал функцию get_photo")
+    #     photo=message.photo[-1]
+    #     file = await bot.get_file(photo.file_id)
+    #     print(f"[LOG] получение файла {file.file_name}")
+    #     PATH=os.path.join("files",f"{file.file_unique_id}.jpg")
+    #     print(PATH)
+    #     await bot.download_file(file.file_path,destination=PATH)
+    #     print(f"[LOG] сохранение файла {PATH}")
+    #     print(file)
+    #     await message.answer("cool photo")
+    @dp.message(F.photo | F.video)
+    async def get_photo_video(message: Message, bot: Bot):
+        print(f"[LOG] Пользователь {message.from_user.id} вызвал функцию get_photo_video")
+        os.makedirs("downloads", exist_ok=True)
+        if not message.photo:
+            file = await bot.get_file(message.video.file_id)
+            print(f'[LOG] Файл {file.file_unique_id} получен')
+            PATH = os.path.join("downloads", f"{file.file_unique_id}.jpg")
 
-    # @dp.message(F.from_user.username.contains("a"))
-    # async def echo(message: Message):
-    #     await message.answer("привет")
-    a=[5059184679,12312321]
-    @dp.message(F.from_user.id.in_(a),Command(commands=["secret"]))
-    async def echo(message: Message):
-        await message.answer("Привет")
+        else:
+            file = await bot.get_file(message.photo[-1].file_id)
+            print(f'[LOG] Файл {file.file_unique_id} получен')
+            PATH = os.path.join("downloads", f"{file.file_unique_id}.mp4")
 
-    # @dp.message(F.text.in_("start"))
-    # async def handler(message: Message):
-    #     await message.answer("asda")
-    #
-    # # содержится в сообщении start
-    # @dp.message(F.text.contains("start"))
-    # async def handler(message: Message):
-    #     await message.answer(f"ПРивет {message.from_user.first_name}")
-    #
-    # @dp.message(F.from_user.username == ("weshouldnttalkanymore"))
-    # async def handler(message: Message):
-    #     await message.answer("sdasd")
-    #
-    #
-    # @dp.message(Command(commands=['start']))
-    # async def start_handler(message: Message):
-    #     print(f"[LOG] пользователь {message.from_user.id, message.from_user.first_name} нажал на кнопку старт")
-    #     await message.answer(f'Привет {message.from_user.full_name}')
+        await bot.download_file(file.file_path, destination=PATH)
+        print(f'[LOG] Файл {PATH} сохранен в соответствующую директорию')
 
-
+        await message.answer("крутое фото или видео")
 
     await dp.start_polling(bot)
 
