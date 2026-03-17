@@ -5,6 +5,7 @@ from config import BOT_TOKEN
 import os
 from aiogram.filters import Command
 import asyncio
+import random
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
@@ -46,16 +47,24 @@ async def main():
     # #     await message.answer_photo("https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/11582/production/_103424017_mary-mcgowan_caught-in-the-act_00001294.jpg.webp",caption="это белка")
     @dp.message(Command(commands=["show"]))
     async def digits_handler(message: Message):
-        if os.path.exists("data.txt"):
-            with open("data.txt", "r") as f:
-                list_data=f.readlines()
-                for i in list_data[1:]:
-                    elements=i.split()
-                    await message.answer(f"Текущая температура на улице: {elements[1]}")
-                    await asyncio.sleep(10)
-        else:
-            await message.answer("файла нету((")
-
+        file_name="data.txt"
+        if not os.path.exists(file_name):
+            with open(file_name, "w") as f:
+                f.write("curs temperature\n")
+                for _ in range(3):
+                    f.write(f"{random.randint(0, 100)} {random.randint(0, 100)}\n")
+        with open(file_name, "r") as f:
+            list_data = f.readlines()
+        if len(list_data) <= 1:
+            await message.answer("Нет данных в файле")
+            return
+        msg = await message.answer("Текущая температура на улице: __")
+        for line in list_data[1:]:
+            elements = line.split()
+            await msg.edit_text(f"Текущая температура на улице: {elements[1]}")
+            await asyncio.sleep(5)
+        await asyncio.sleep(3)
+        await msg.delete()
 
     await dp.start_polling(bot)
 print(f'[LOG] Бот запущен')
