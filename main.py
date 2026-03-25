@@ -1,75 +1,47 @@
-from aiogram import Bot, Dispatcher, F, types
-from aiogram.types import BotCommand, KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.filters import Command
+from aiogram import Bot, Dispatcher, F
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, BotCommand, ReplyKeyboardRemove
 from asyncio import run
 from config import BOT_TOKEN
+from aiogram.filters import Command
 
-async def set_commands(bot: Bot):
-    commands = [
-        BotCommand(command='/start', description="старт"),
-        BotCommand(command='/about', description="о боте"),
-        BotCommand(command='/tasks', description="показать задания"),
-    ]
-    await bot.set_my_commands(commands)
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
-    await set_commands(bot)
 
-    # Главное меню клавиатуры
-    main_kb = ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="/tasks"), KeyboardButton(text="/about")]],
-        resize_keyboard=True
+    knopka_1 = KeyboardButton(text='Команда 1', request_contact=True)
+    knopka_2 = KeyboardButton(text='отправить локацию  2', request_location=True)
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[[knopka_1,knopka_2]],  # Передаем туда кнопки, формируем клавиатуру
+        resize_keyboard=True,  # сжалась кнопка до высоты текста и ширины экрана телефона
+        input_field_placeholder="Клавиатура есть в плейсходлере ..."
     )
-
-    # Inline-кнопки для /tasks
-    tasks_kb = InlineKeyboardMarkup()
-    tasks_kb.add(InlineKeyboardButton("1", callback_data="q"))  # сверху
-    tasks_kb.row(
-        InlineKeyboardButton("2", callback_data="a"),
-        InlineKeyboardButton("3", callback_data="s")
-    )
-
-    # /start
-    @dp.message(Command("start"))
-    async def start(message: types.Message):
+    @dp.message(Command(commands=['start']))
+    async def start(message: Message):
         await message.answer(
-            "Привет! Я учебный бот.\n\n"
-            "Команды:\n"
-            "/tasks — показать задания\n"
-            "/about — информация обо мне",
-            reply_markup=main_kb
+            text = "Вот бот",
+            reply_markup=keyboard
         )
 
-    # /about
-    @dp.message(Command("about"))
-    async def about(message: types.Message):
-        await message.answer_photo(
-            photo="https://picsum.photos/200",
-            caption="Учебный бот\n🌐 https://example.com"
+    @dp.message(F.text == 'Команда 1')
+    async def com1_handler(message: Message):
+        await message.answer(
+            text = "Вот команда 1",
+            reply_markup=ReplyKeyboardRemove()
         )
 
-    # /tasks
-    @dp.message(Command("tasks"))
-    async def tasks_cmd(message: types.Message):
-        await message.answer("Выбери действие:", reply_markup=tasks_kb)
+    @dp.message(F.contact)
+    async def get_contact(message: Message):
+        data=message.contact.phone_number
+        print(data)
 
-    # Обработка кнопок /tasks
-    @dp.callback_query(F.data == "q")
-    async def question(call: types.CallbackQuery):
-        await call.message.answer("❓ Вопрос: 2 + 2 = ?")
-
-    @dp.callback_query(F.data == "a")
-    async def answer(call: types.CallbackQuery):
-        await call.message.answer("✅ Ответ: 4")
-
-    @dp.callback_query(F.data == "s")
-    async def solution(call: types.CallbackQuery):
-        await call.message.answer("📘 Решение: складываем 2 + 2 → получаем 4")
+    @dp.message(F.location)
+    async def get_location(message: Message):
+        loc1 = message.location.latitude
+        loc2 = message.location.longitude
+        print(loc1, loc2)
 
     await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    print("[LOG] Бот запущен")
-    run(main())
+print(f'[LOG] Бот запущен')
+# if name == '__main__':
+run(main()) # запускает цикла событий(dispatcher)
