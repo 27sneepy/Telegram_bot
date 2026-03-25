@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, BotCommand, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, BotCommand, ReplyKeyboardRemove, \
+    InlineKeyboardMarkup
 from asyncio import run
 from config import BOT_TOKEN
 from aiogram.filters import Command
@@ -9,37 +10,37 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    knopka_1 = KeyboardButton(text='Команда 1', request_contact=True)
-    knopka_2 = KeyboardButton(text='отправить локацию  2', request_location=True)
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=[[knopka_1,knopka_2]],  # Передаем туда кнопки, формируем клавиатуру
-        resize_keyboard=True,  # сжалась кнопка до высоты текста и ширины экрана телефона
-        input_field_placeholder="Клавиатура есть в плейсходлере ..."
-    )
-    @dp.message(Command(commands=['start']))
+    knopka_1 = KeyboardButton(text='Заказать еду')
+    main_keyboard = ReplyKeyboardMarkup(
+        keyboard=[[knopka_1]],resize_keyboard=True,input_field_placeholder="Клавиатура есть в плейсходлере ...")
+
+    b1=KeyboardButton(text="пицца")
+    b2=KeyboardButton(text="суши")
+    back=KeyboardButton(text="назад")
+    kb= ReplyKeyboardMarkup(keyboard=[[b1,b2,back]],resize_keyboard=True)
+
+    @dp.message(lambda message: message.text == "/start" or (message.text and message.text.lower() == "назад"))
     async def start(message: Message):
         await message.answer(
-            text = "Вот бот",
-            reply_markup=keyboard
+            text = "!",
+            reply_markup=main_keyboard
         )
 
-    @dp.message(F.text == 'Команда 1')
+    @dp.message(F.text == 'Заказать еду')
     async def com1_handler(message: Message):
         await message.answer(
-            text = "Вот команда 1",
-            reply_markup=ReplyKeyboardRemove()
+            text = "!",
+            reply_markup=kb
         )
 
-    @dp.message(F.contact)
-    async def get_contact(message: Message):
-        data=message.contact.phone_number
-        print(data)
+    @dp.message(F.text == 'суши')
+    async def get_susi(message: Message):
+        await message.answer_photo(photo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQphqEqCvFJx7p05cjWyHMJD7Mis6ZOiSXXwg&s")
 
-    @dp.message(F.location)
-    async def get_location(message: Message):
-        loc1 = message.location.latitude
-        loc2 = message.location.longitude
-        print(loc1, loc2)
+    @dp.message(F.text == 'пицца')
+    async def get_pizza(message: Message):
+        await message.answer_photo(
+            photo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCy7sZTBqdrSeeB1ChyPoVumMO6_J7haDvuw&s")
 
     await dp.start_polling(bot)
 print(f'[LOG] Бот запущен')
