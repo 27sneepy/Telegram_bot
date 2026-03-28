@@ -9,21 +9,22 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    knopka_1 = KeyboardButton(text='Команда 1', request_contact=True)
-    knopka_2 = KeyboardButton(text='отправить локацию  2', request_location=True)
+    knopka_1 = KeyboardButton(text='Отправить номер телефона', request_contact=True)
+    knopka_2 = KeyboardButton(text='Отправить геолокацию', request_location=True)
     keyboard = ReplyKeyboardMarkup(
         keyboard=[[knopka_1,knopka_2]],  # Передаем туда кнопки, формируем клавиатуру
         resize_keyboard=True,  # сжалась кнопка до высоты текста и ширины экрана телефона
-        input_field_placeholder="Клавиатура есть в плейсходлере ..."
+        input_field_placeholder="Клавиатура ...",
+        one_time_keyboard=True
     )
-    @dp.message(Command(commands=['start']))
+    @dp.message(Command(commands=['reg']))
     async def start(message: Message):
         await message.answer(
-            text = "Вот бот",
+            text = "Выбери кнопку",
             reply_markup=keyboard
         )
 
-    @dp.message(F.text == 'Команда 1')
+    @dp.message(F.text == 'Отправить номер телефона')
     async def com1_handler(message: Message):
         await message.answer(
             text = "Вот команда 1",
@@ -33,15 +34,16 @@ async def main():
     @dp.message(F.contact)
     async def get_contact(message: Message):
         data=message.contact.phone_number
-        print(data)
+        with open("data.txt","a") as f:
+            f.write(f'{message.from_user.username}-{data}\n')
 
     @dp.message(F.location)
     async def get_location(message: Message):
         loc1 = message.location.latitude
         loc2 = message.location.longitude
-        print(loc1, loc2)
+        with open("data.txt", "a") as f:
+            f.write(f'{message.from_user.username}-{loc1};{loc2}\n')
 
     await dp.start_polling(bot)
 print(f'[LOG] Бот запущен')
-# if name == '__main__':
-run(main()) # запускает цикла событий(dispatcher)
+run(main())

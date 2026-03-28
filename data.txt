@@ -1,4 +1,0 @@
-curs temperature
-44 25
-75 48
-11 29
