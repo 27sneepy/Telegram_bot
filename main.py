@@ -1,46 +1,38 @@
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, BotCommand, ReplyKeyboardRemove, \
-    InlineKeyboardMarkup
+    InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from asyncio import run
 from config import BOT_TOKEN
 from aiogram.filters import Command
-
+import asyncio
 
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
 
-    knopka_1 = KeyboardButton(text='Заказать еду')
-    main_keyboard = ReplyKeyboardMarkup(
-        keyboard=[[knopka_1]],resize_keyboard=True,input_field_placeholder="Клавиатура есть в плейсходлере ...")
+    # InlineKeyboardMarkup клавиатура
+    # InlineKeyboardButton кнопки
 
-    b1=KeyboardButton(text="пицца")
-    b2=KeyboardButton(text="суши")
-    back=KeyboardButton(text="назад")
-    kb= ReplyKeyboardMarkup(keyboard=[[b1,b2,back]],resize_keyboard=True)
+    btn_1=InlineKeyboardButton(text="Пицца",callback_data="пицца")
+    btn_2 = InlineKeyboardButton(text="Американские бургеры", callback_data="бургеры")
+    keyboard=InlineKeyboardMarkup(inline_keyboard=[[btn_1], [btn_2]])
 
-    @dp.message(lambda message: message.text == "/start" or (message.text and message.text.lower() == "назад"))
+    @dp.message(F.text=="заказ")
     async def start(message: Message):
-        await message.answer(
-            text = "!",
-            reply_markup=main_keyboard
-        )
+        await message.answer(text="Выберите блюдо", reply_markup=keyboard)
 
-    @dp.message(F.text == 'Заказать еду')
-    async def com1_handler(message: Message):
-        await message.answer(
-            text = "!",
-            reply_markup=kb
-        )
+    @dp.callback_query(F.data)
+    async def callback_handler(callback: CallbackQuery):
+        data = callback.data
+        await callback.message.edit_text(f"Вы выбрали: {data}")
+        await asyncio.sleep(1)
+        await callback.answer("Оформляем заказ...")
+        await asyncio.sleep(1)
+        await callback.message.edit_text("Ожидание курьера...")
+        await asyncio.sleep(1)
+        await callback.message.edit_text(f"{data} - заказ готов")
 
-    @dp.message(F.text == 'суши')
-    async def get_susi(message: Message):
-        await message.answer_photo(photo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQphqEqCvFJx7p05cjWyHMJD7Mis6ZOiSXXwg&s")
 
-    @dp.message(F.text == 'пицца')
-    async def get_pizza(message: Message):
-        await message.answer_photo(
-            photo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCy7sZTBqdrSeeB1ChyPoVumMO6_J7haDvuw&s")
 
     await dp.start_polling(bot)
 print(f'[LOG] Бот запущен')
