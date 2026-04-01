@@ -32,8 +32,6 @@ async def main():
         await asyncio.sleep(1)
         await callback.message.edit_text(f"{data} - заказ готов")
 
-
-
     await dp.start_polling(bot)
 print(f'[LOG] Бот запущен')
 # if name == '__main__':
