@@ -1,7 +1,7 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from keyboards.inline import signup_keyboard
+from keyboards.start_kb import signup_keyboard
 from lexicons.lexicon import SERVICES_TEXT, SUCCESS_TEXT
 
 router = Router()
