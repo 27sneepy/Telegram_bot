@@ -1,18 +1,15 @@
-from aiogram import Bot, Dispatcher  # Импортируем бота, диспетчер и фильтры
-from asyncio import run                  # Для запуска асинхронной функции
-from handlers import router
-from configs.config import BOT_TOKEN             # Токен вашего бота из config.py
+from aiogram import Bot, Dispatcher
+from configs.config import BOT_TOKEN
+from asyncio import run
+from handlers import start, services
 
-# Основная функция бота
 async def main():
-    bot = Bot(token=BOT_TOKEN)                          # Создаем объект бота
-    dp = Dispatcher()                                   # Создаем диспетчер
+    bot = Bot(token=BOT_TOKEN)
+    dp = Dispatcher()
 
-    dp.include_router(router)
+    dp.include_router(start.router)
+    dp.include_router(services.router)
 
-    # Запуск бота
-    await dp.start_polling(bot)  # Начинаем опрос Telegram API
-# Точка входа
-print('[LOG] Бот запущен')   # Лог запуска
-run(main())                   # Запускаем асинхронную функцию main
-# as
+    await dp.start_polling(bot)
+
+run(main())
