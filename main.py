@@ -4,6 +4,9 @@ from asyncio import run
 from handlers.menu import router as menu_router
 from handlers.start import router as start_router
 
+
+
+s=0
 async def main():
     bot = Bot(token=BOT_TOKEN)
     dp = Dispatcher()
