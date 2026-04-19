@@ -8,4 +8,5 @@ router = Router()
 
 @router.message(Command("start"))
 async def start_handler(message: Message):
+    # print(message.from_user.id,message.chat.id)
     await message.answer(START_TEXT,reply_markup=await start_kb())
